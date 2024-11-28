@@ -279,6 +279,10 @@ public class CharMatrix {
             return new Position(x + dx, y + dy);
         }
 
+        public Position add(Direction delta) {
+            return new Position(x + delta.x(), y + delta.y());
+        }
+
         public List<Position> getNeighbours()
         {
             List<Position> result = new ArrayList<>();
