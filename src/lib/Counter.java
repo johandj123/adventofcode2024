@@ -3,7 +3,7 @@ package lib;
 import java.util.*;
 
 public class Counter<T> {
-    private Map<T, Integer> map = new HashMap<>();
+    private final Map<T, Integer> map = new HashMap<>();
 
     public int get(T key) {
         return map.getOrDefault(key, 0);
