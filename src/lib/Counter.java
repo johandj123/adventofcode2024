@@ -1,6 +1,9 @@
 package lib;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class Counter<T> {
     private final Map<T, Integer> map = new HashMap<>();
@@ -35,7 +38,7 @@ public class Counter<T> {
 
     public Map.Entry<T, Integer> maxCount() {
         return map.entrySet().stream()
-                .max(Comparator.comparing(Map.Entry::getValue))
+                .max(Map.Entry.comparingByValue())
                 .orElseThrow();
     }
 }
