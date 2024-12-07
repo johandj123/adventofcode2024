@@ -8,6 +8,9 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class PermutationUtil {
+    private PermutationUtil() {
+    }
+
     public static <T> Iterable<List<T>> permutations(List<T> list) {
         return new Permutations<>(list);
     }
