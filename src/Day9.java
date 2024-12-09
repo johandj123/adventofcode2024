@@ -8,7 +8,42 @@ public class Day9 {
     public static void main(String[] args) throws IOException {
         String input = InputUtil.readAsString("input9.txt");
         first(input);
+        second(input);
+    }
 
+    private static void first(String input) {
+        List<Integer> disk = new ArrayList<>();
+        int id = 0;
+        for (int i = 0; i < input.length(); i++) {
+            int l = input.charAt(i) - '0';
+            if ((i % 2) == 0) {
+                for (int j = 0; j < l; j++) {
+                    disk.add(id);
+                }
+                id++;
+            } else {
+                for (int j = 0; j < l; j++) {
+                    disk.add(-1);
+                }
+            }
+        }
+
+        disk = new ArrayList<>(disk);
+        for (int i = 0; i < disk.size(); i++) {
+            if (disk.get(i) == -1) {
+                int last = disk.get(disk.size() - 1);
+                disk.remove(disk.size() - 1);
+                disk.set(i, last);
+                while (disk.get(disk.size() - 1) == -1) {
+                    disk.remove(disk.size() - 1);
+                }
+            }
+        }
+
+        checksum(disk);
+    }
+
+    private static void second(String input) {
         List<Entry> entries = new ArrayList<>();
         int id = 0;
         for (int i = 0; i < input.length(); i++) {
@@ -51,51 +86,6 @@ public class Day9 {
                 disk.add(entry.id);
             }
         }
-        checksum(disk);
-    }
-
-    private static void show(List<Entry> entries) {
-        for (var entry : entries) {
-            for (int i = 0; i < entry.size; i++) {
-                if (entry.id == -1) {
-                    System.out.print(".");
-                } else {
-                    System.out.print(entry.id);
-                }
-            }
-        }
-        System.out.println();
-    }
-
-    private static void first(String input) {
-        List<Integer> disk = new ArrayList<>();
-        int id = 0;
-        for (int i = 0; i < input.length(); i++) {
-            int l = input.charAt(i) - '0';
-            if ((i % 2) == 0) {
-                for (int j = 0; j < l; j++) {
-                    disk.add(id);
-                }
-                id++;
-            } else {
-                for (int j = 0; j < l; j++) {
-                    disk.add(-1);
-                }
-            }
-        }
-
-        disk = new ArrayList<>(disk);
-        for (int i = 0; i < disk.size(); i++) {
-            if (disk.get(i) == -1) {
-                int last = disk.get(disk.size() - 1);
-                disk.remove(disk.size() - 1);
-                disk.set(i, last);
-                while (disk.get(disk.size() - 1) == -1) {
-                    disk.remove(disk.size() - 1);
-                }
-            }
-        }
-
         checksum(disk);
     }
 
