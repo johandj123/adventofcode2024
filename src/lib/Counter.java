@@ -41,4 +41,9 @@ public class Counter<T> {
                 .max(Map.Entry.comparingByValue())
                 .orElseThrow();
     }
+
+    @Override
+    public String toString() {
+        return map.toString();
+    }
 }
