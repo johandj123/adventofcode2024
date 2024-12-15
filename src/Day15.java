@@ -20,21 +20,46 @@ public class Day15 {
         second(charMatrix, moves);
     }
 
+    private static void first(CharMatrix charMatrix, String moves) {
+        CharMatrix.Position position = charMatrix.find('@').get();
+        for (char c : moves.toCharArray()) {
+            Direction direction = MOVES.get(c);
+            CharMatrix.Position scan = position;
+            do {
+                scan = scan.add(direction);
+            } while (scan.getUnbounded() == 'O');
+            if (scan.get() == '.') {
+                scan.set('O');
+                position.set('.');
+                position = position.add(direction);
+                position.set('@');
+            }
+//            System.out.println("Move " +  c);
+//            System.out.println(charMatrix);
+        }
+
+        int sum = charMatrix.stream()
+                .filter(p -> p.get() == 'O')
+                .mapToInt(p -> p.getY() * 100 + p.getX())
+                .sum();
+        System.out.println(sum);
+    }
+
     private static CharMatrix enlarge(CharMatrix charMatrix) {
         CharMatrix result = new CharMatrix(charMatrix.getHeight(), charMatrix.getWidth() * 2, '.');
-        for (int y = 0; y < charMatrix.getHeight(); y++) {
-            for (int x = 0; x < charMatrix.getWidth(); x++) {
-                char c = charMatrix.get(x, y);
-                String s = switch (c) {
-                    case '#' -> "##";
-                    case 'O' -> "[]";
-                    case '.' -> "..";
-                    case '@' -> "@.";
-                    default -> throw new IllegalArgumentException();
-                };
-                result.set(x * 2, y, s.charAt(0));
-                result.set(x * 2 + 1, y, s.charAt(1));
-            }
+        for (var position : charMatrix) {
+            char c = position.get();
+            String s = switch (c) {
+                case '#' -> "##";
+                case 'O' -> "[]";
+                case '.' -> "..";
+                case '@' -> "@.";
+                default -> throw new IllegalArgumentException();
+            };
+            int x = position.getX();
+            int y = position.getY();
+            result.set(x * 2, y, s.charAt(0));
+            result.set(x * 2 + 1, y, s.charAt(1));
         }
         return result;
     }
@@ -76,14 +101,10 @@ public class Day15 {
 //            System.out.println(charMatrix);
         }
 
-        int sum = 0;
-        for (int y = 0; y < charMatrix.getHeight(); y++) {
-            for (int x = 0; x < charMatrix.getWidth(); x++) {
-                if (charMatrix.get(x, y) == '[') {
-                    sum += (y * 100 + x);
-                }
-            }
-        }
+        int sum = charMatrix.stream()
+                .filter(p -> p.get() == '[')
+                .mapToInt(p -> p.getY() * 100 + p.getX())
+                .sum();
         System.out.println(sum);
     }
 
@@ -117,34 +138,5 @@ public class Day15 {
             next.set(i == 0 ? '[' : ']');
             position.add(i, 0).set('.');
         }
-    }
-
-    private static void first(CharMatrix charMatrix, String moves) {
-        CharMatrix.Position position = charMatrix.find('@').get();
-        for (char c : moves.toCharArray()) {
-            Direction direction = MOVES.get(c);
-            CharMatrix.Position scan = position;
-            do {
-                scan = scan.add(direction);
-            } while (scan.getUnbounded() == 'O');
-            if (scan.get() == '.') {
-                scan.set('O');
-                position.set('.');
-                position = position.add(direction);
-                position.set('@');
-            }
-//            System.out.println("Move " +  c);
-//            System.out.println(charMatrix);
-        }
-
-        int sum = 0;
-        for (int y = 0; y < charMatrix.getHeight(); y++) {
-            for (int x = 0; x < charMatrix.getWidth(); x++) {
-                if (charMatrix.get(x, y) == 'O') {
-                    sum += (y * 100 + x);
-                }
-            }
-        }
-        System.out.println(sum);
     }
 }
