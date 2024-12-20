@@ -383,6 +383,11 @@ public class CharMatrix implements Iterable<CharMatrix.Position> {
             return result;
         }
 
+        public int manhattanDistance(CharMatrix.Position o)
+        {
+            return Math.abs(x - o.x) + Math.abs(y - o.y);
+        }
+
         @Override
         public String toString() {
             return String.format("(%d,%d)", x, y);
