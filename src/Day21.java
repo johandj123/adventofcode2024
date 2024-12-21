@@ -7,6 +7,7 @@ import java.util.*;
 public class Day21 {
     static final Map<Character, Position> KEYPAD1;
     static final Map<Character, Position> KEYPAD2;
+    static final Map<Memo, Long> MEMO = new HashMap<>();
 
     static {
         KEYPAD1 = new HashMap<>();
@@ -31,51 +32,56 @@ public class Day21 {
 
     public static void main(String[] args) throws IOException {
         List<String> input = InputUtil.readAsLines("input21.txt");
-        int first = input.stream().mapToInt(Day21::first).sum();
+        long first = input.stream().mapToLong(sequence -> calculate(sequence, 2)).sum();
         System.out.println(first);
+        long second = input.stream().mapToLong(sequence -> calculate(sequence, 25)).sum();
+        System.out.println(second);
     }
 
-    public static int first(String sequence) {
-        Set<String> set = type(KEYPAD2, type(KEYPAD2, type(KEYPAD1, sequence)));
-        int x = set.stream().mapToInt(String::length).min().orElseThrow();
-
+    public static long calculate(String sequence, int depth) {
+        long x = type1(sequence, depth);
         int y = Integer.parseInt(sequence.substring(0, 3));
-        System.out.println(x + ";" + y);
         return x * y;
     }
 
-    public static Set<String> type(Map<Character, Position> keypad, Set<String> sequences) {
-        Set<String> result = new HashSet<>();
-        for (String sequence : sequences) {
-            result.addAll(type(keypad, sequence));
-        }
-        return result;
-    }
-
-    public static Set<String> type(Map<Character, Position> keypad, String sequence) {
-        Set<Position> positions = new HashSet<>(keypad.values());
-        List<List<String>> parts = new ArrayList<>();
-        Position position = keypad.get('A');
+    public static long type1(String sequence, int depth) {
+        Set<Position> positions = new HashSet<>(KEYPAD1.values());
+        Position position = KEYPAD1.get('A');
+        long length = 0;
         for (char c : sequence.toCharArray()) {
-            Position dest = keypad.get(c);
-            parts.add(options(position, dest, positions));
+            Position dest = KEYPAD1.get(c);
+            List<String> optionList = options(position, dest, positions);
+            long min = optionList.stream().mapToLong(opt -> type2(opt, depth)).min().orElseThrow();
+            length += min;
             position = dest;
         }
-        Set<String> result = new HashSet<>();
-        makeResult(result, "", parts);
-        return result;
+        return length;
     }
 
-    private static void makeResult(Set<String> result, String prefix, List<List<String>> parts) {
-        if (parts.isEmpty()) {
-            result.add(prefix);
-            return;
+    public static long type2(String sequence, int depth) {
+        if (depth == 0) {
+            return sequence.length();
         }
-        List<String> headList = parts.get(0);
-        for (String head : headList) {
-            makeResult(result, prefix + head, parts.subList(1, parts.size()));
+        Long memoResult = MEMO.get(new Memo(sequence, depth));
+        if (memoResult != null) {
+            return memoResult;
         }
+
+        Set<Position> positions = new HashSet<>(KEYPAD2.values());
+        Position position = KEYPAD2.get('A');
+        long length = 0;
+        for (char c : sequence.toCharArray()) {
+            Position dest = KEYPAD2.get(c);
+            List<String> optionList = options(position, dest, positions);
+            long min = optionList.stream().mapToLong(opt -> type2(opt, depth - 1)).min().orElseThrow();
+            length += min;
+            position = dest;
+        }
+        MEMO.put(new Memo(sequence, depth), length);
+        return length;
     }
+
+    record Memo(String sequence, int depth) {}
 
     public static List<String> options(Position src, Position dest, Set<Position> positions) {
         if (src.equals(dest)) {
